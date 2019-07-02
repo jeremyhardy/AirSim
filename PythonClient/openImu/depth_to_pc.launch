@@ -1,0 +1,27 @@
+<launch>
+
+	<arg name="depth_image_ns" default="depth"/>
+	<arg name="point_cloud_ns" default="cloud"/>
+	<arg name="image_rect_ns" default="rectified"/>
+
+	<node pkg="nodelet" type="nodelet" args="manager" name="managerify" output="screen"/>
+
+	<node pkg="nodelet" type="nodelet" name="rectify" args="load image_proc/rectify managerify">
+		<remap from="image_mono" to="$(arg depth_image_ns)/image_raw"/>
+		<remap from="camera_info" to="$(arg depth_image_ns)/camera_info"/>
+		<remap from="image_rect" to="$(arg image_rect_ns)/image_rect"/>
+	</node>
+
+	<node pkg="nodelet" type="nodelet" name="cloudify" args="load depth_image_proc/point_cloud_xyz managerify">
+		<remap from="$(arg image_rect_ns)/camera_info" to="$(arg depth_image_ns)/camera_info"/>
+		<remap from="image_rect" to="$(arg image_rect_ns)/image_rect"/>
+		<remap from="points" to="$(arg point_cloud_ns)/points"/>
+	</node>
+
+  <node pkg="nodelet" type="nodelet" name="disparify" args="load depth_image_proc/disparity managerify">
+    <remap from="right/camera_info" to="$(arg depth_image_ns)/camera_info"/>
+    <remap from="left/image_rect" to="$(arg image_rect_ns)/image_rect"/>
+    <remap from="left/disparity" to="$(arg depth_image_ns)/disparity"/>
+  </node>
+
+</launch>
