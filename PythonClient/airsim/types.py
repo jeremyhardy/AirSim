@@ -184,7 +184,8 @@ class Quaternionr(MsgpackMixin):
         return self.star() / self.dot(self)
 
     def sgn(self):
-        return self/self.get_length()
+        n = self.get_length() 
+        return Quaternionr(self.x_val/n, self.y_val/n, self.z_val/n, self.w_val/n)
 
     def get_length(self):
         return ( self.x_val**2 + self.y_val**2 + self.z_val**2 + self.w_val**2 )**0.5

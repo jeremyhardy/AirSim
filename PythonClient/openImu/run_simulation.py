@@ -12,7 +12,7 @@ import img_publisher as img
 import imu_publisher as inertial
 import read_data as traj
 
-path = '/mnt/DATA1/AirSim'
+path = '/home/sim/data'
 
 MONO   = True 
 STEREO = False
