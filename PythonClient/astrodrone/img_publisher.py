@@ -1,4 +1,4 @@
-import math, cv2
+import math, cv2, airsim
 import numpy as np
 from cv_bridge import CvBridge
 from sensor_msgs.msg import Image, CameraInfo, Range
@@ -139,19 +139,22 @@ def CreateInfoMessage(img_in, fov, img_time, sequence):
     return msg_info
     
 def CreateTFMessage(pose_msg, img_time, sequence):
+    down = airsim.Quaternionr(0,0,0,1)
+    orientation = airsim.Quaternionr(pose_msg.orientation.x_val, pose_msg.orientation.y_val, pose_msg.orientation.z_val, pose_msg.orientation.w_val) 
+    final = orientation.__mul__(down) 
     msg_tf = TFMessage()
     msg_tf.transforms.append(TransformStamped())
     msg_tf.transforms[0].header.seq = sequence
     msg_tf.transforms[0].header.stamp = img_time
     msg_tf.transforms[0].header.frame_id = "/down_camera_frame"
     msg_tf.transforms[0].child_frame_id = "/world"
-    msg_tf.transforms[0].transform.translation.x = pose_msg.pose.position.x
-    msg_tf.transforms[0].transform.translation.y = pose_msg.pose.position.y
-    msg_tf.transforms[0].transform.translation.z = pose_msg.pose.position.z
-    msg_tf.transforms[0].transform.rotation.x = -0.7071
-    msg_tf.transforms[0].transform.rotation.y = 0.7071
-    msg_tf.transforms[0].transform.rotation.z = 0
-    msg_tf.transforms[0].transform.rotation.w = 0
+    msg_tf.transforms[0].transform.translation.x = pose_msg.position.x_val
+    msg_tf.transforms[0].transform.translation.y = pose_msg.position.y_val
+    msg_tf.transforms[0].transform.translation.z = pose_msg.position.z_val
+    msg_tf.transforms[0].transform.rotation.x = final.x_val 
+    msg_tf.transforms[0].transform.rotation.y = final.y_val
+    msg_tf.transforms[0].transform.rotation.z = final.z_val
+    msg_tf.transforms[0].transform.rotation.w = final.w_val
     return msg_tf
     
 def CreateTFStampedMessage(pose_msg, img_time, sequence):
@@ -160,9 +163,9 @@ def CreateTFStampedMessage(pose_msg, img_time, sequence):
     msg_tf.header.stamp = img_time
     msg_tf.header.frame_id = "/down_camera_frame"
     msg_tf.child_frame_id = "/world"
-    msg_tf.transform.translation.x = pose_msg.pose.position.x
-    msg_tf.transform.translation.y = pose_msg.pose.position.y
-    msg_tf.transform.translation.z = pose_msg.pose.position.z
+    msg_tf.transform.translation.x = pose_msg.position.x_val
+    msg_tf.transform.translation.y = pose_msg.position.y_val
+    msg_tf.transform.translation.z = pose_msg.position.z_val
     msg_tf.transform.rotation.x = -0.7071
     msg_tf.transform.rotation.y = 0.7071
     msg_tf.transform.rotation.z = 0

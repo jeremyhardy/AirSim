@@ -5,6 +5,7 @@ from rosgraph_msgs.msg import Clock
 from tf2_msgs.msg import TFMessage
 from geometry_msgs.msg import TransformStamped
 from cv_bridge import CvBridge
+from nav_msgs.msg import Path
 import numpy as np
 
 def CreatePoseMessage(position, orientation, gt_time, sequence):
@@ -69,7 +70,24 @@ def CreateImuMessage(orientation, linear_acceleration, angular_velocity, imu_tim
     msg_imu.linear_acceleration = msg_la
     return msg_imu 
 
+def Truth2Body(truth, gravity_nom): 
+    gravity_quat = utils.vec2quat(gravity_nom)
+    orientation = utils.qnorm(airsim.Quaternionr(truth.orientation.x_val, truth.orientation.y_val, truth.orientation.z_val, truth.orientation.w_val))
+    gravity_quat.rotate(orientation) 
 
+    gravity_vec   = utils.quat2vec(gravity_quat)
+    linear_acc    = airsim.Vector3r(truth.linear_acceleration.x_val, truth.linear_acceleration.y_val, truth.linear_acceleration.z_val)
+    angular_vel   = airsim.Vector3r(truth.angular_velocity.x_val, truth.angular_velocity.y_val, truth.angular_velocity.z_val)
+    linear_acc = linear_acc.__add__(gravity_vec)
+    return linear_acc, angular_vel
+
+def CreatePathMessage(path_msg, pose_msg, imu_time, sequence):
+    msg_path = path_msg 
+    msg_path.poses.append(pose_msg)
+    msg_path.header.stamp = imu_time 
+    msg_path.header.seq = sequence 
+    msg_path.header.frame_id = "world" 
+    return msg_path 
 
 
 

@@ -181,7 +181,10 @@ class Quaternionr(MsgpackMixin):
         return self.conjugate()
 
     def inverse(self):
-        return self.star() / self.dot(self)
+        star = self.star()
+        N = self.dot(self) 
+        inverse = Quaternionr(star.x_val/N, star.y_val/N, star.z_val/N, star.w_val/N)
+        return inverse
 
     def sgn(self):
         n = self.get_length() 

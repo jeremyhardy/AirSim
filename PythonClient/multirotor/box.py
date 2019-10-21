@@ -46,3 +46,4 @@ print("moving by velocity vx=" + str(vx) + ", vy=" + str(vy) + ", yaw=0")
 client.moveByVelocityZAsync(vx, vy,z,duration, airsim.DrivetrainType.MaxDegreeOfFreedom, airsim.YawMode(False, 0)).join()
 time.sleep(delay)
 client.hoverAsync().join()
+trigger = 0 

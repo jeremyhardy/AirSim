@@ -1,10 +1,8 @@
 import airsim 
 
-def qnorm(quaternion, limit):
-    iteration = 0
-    while(quaternion.get_length()!=1 and iteration < limit):
+def qnorm(quaternion):
+    while(quaternion.get_length()!=1):
         quaternion = quaternion.sgn()
-        iteration = iteration + 1
     return quaternion
     
 def quat2vec(quaternion): 
