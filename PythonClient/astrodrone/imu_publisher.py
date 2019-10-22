@@ -71,14 +71,17 @@ def CreateImuMessage(orientation, linear_acceleration, angular_velocity, imu_tim
     return msg_imu 
 
 def Truth2Body(truth, gravity_nom): 
-    gravity_quat = utils.vec2quat(gravity_nom)
-    orientation = utils.qnorm(airsim.Quaternionr(truth.orientation.x_val, truth.orientation.y_val, truth.orientation.z_val, truth.orientation.w_val))
-    gravity_quat.rotate(orientation) 
+    #gravity_quat = utils.vec2quat(gravity_nom)
+    quat_body = utils.qnorm(utils.mess2quat(truth.orientation))
+    #gravity_quat.rotate(orientation) 
 
-    gravity_vec   = utils.quat2vec(gravity_quat)
-    linear_acc    = airsim.Vector3r(truth.linear_acceleration.x_val, truth.linear_acceleration.y_val, truth.linear_acceleration.z_val)
+    #gravity_vec   = utils.quat2vec(gravity_quat)
+    linear_acc    = utils.quat2vec(truth.linear_acceleration).__sub__(gravity_nom)
+    linear_acc = utils.vec2quat(linear_acc)
+    linear_acc = linear_acc.rotate(quat_body)
+    linear_acc = utils.quat2vec(linear_acc)
     angular_vel   = airsim.Vector3r(truth.angular_velocity.x_val, truth.angular_velocity.y_val, truth.angular_velocity.z_val)
-    linear_acc = linear_acc.__add__(gravity_vec)
+    #linear_acc = linear_acc.__sub__(gravity_vec)
     return linear_acc, angular_vel
 
 def CreatePathMessage(path_msg, pose_msg, imu_time, sequence):

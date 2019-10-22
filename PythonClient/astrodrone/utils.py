@@ -12,3 +12,9 @@ def quat2vec(quaternion):
 def vec2quat(vector): 
     quaternion = airsim.Quaternionr(vector.x_val, vector.y_val, vector.z_val, 0)
     return quaternion
+
+def mess2quat(message): 
+    quaternion = airsim.Quaternionr(message.x_val, message.y_val, message.z_val, message.w_val)
+    return quaternion
+
+    
