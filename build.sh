@@ -113,6 +113,10 @@ Unreal/Environments/LandscapeMountains/clean.sh
 mkdir -p Unreal/Environments/LandscapeMountains/Plugins
 rsync -a --delete Unreal/Plugins/AirSim Unreal/Environments/LandscapeMountains/Plugins
 
+# Update LandscapeMountains project
+Unreal/Environments/Blocks/clean.sh
+mkdir -p Unreal/Environments/Blocks/Plugins
+rsync -a --delete Unreal/Plugins/AirSim Unreal/Environments/Blocks/Plugins
 set +x
 
 echo ""
@@ -120,7 +124,7 @@ echo ""
 echo "=================================================================="
 echo " AirSim plugin is built! Here's how to build Unreal project."
 echo "=================================================================="
-echo "If you are using LandscapeMountains environment, its already updated."
+echo "If you are using Blocks environment, its already updated."
 echo "If you are using your own environment, update plugin using,"
 echo "rsync -a --delete Unreal/Plugins path/to/MyUnrealProject"
 echo ""

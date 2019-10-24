@@ -191,10 +191,12 @@ while trigger == 1:
     if SCANNING:
         lidar_data = client.getLidarData()
         points = np.array(lidar_data.point_cloud, dtype=np.dtype('f4'))
-        print(points.shape)
-        print(len(points.shape))
-        print("\tReading %d: time_stamp: %d number_of_points: %d" % (sequence, lidar_data.time_stamp, len(points)))
+        # print(points.shape)
+        # print(len(points.shape))
+        # print("\tReading %d: time_stamp: %d number_of_points: %d" % (sequence, lidar_data.time_stamp, len(points)))
         try:
+            if len(points) % 48 != 0: 
+                print("Bad PC")
             points = np.reshape(points, (int(points.shape[0] / 3), 3))
 
             scan_msg = pc_publisher.CreatePC2Message(points, sim_time, sequence)
@@ -210,5 +212,4 @@ while trigger == 1:
             print("Scanning LiDAR skipped due to incomplete data") 
 
     sequence += 1
-    trigger = 0 
 subprocess.Popen('rosnode kill -a', stdin=subprocess.PIPE, shell=True, cwd=path)
