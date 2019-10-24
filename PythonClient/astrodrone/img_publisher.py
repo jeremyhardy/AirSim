@@ -139,9 +139,10 @@ def CreateInfoMessage(img_in, fov, img_time, sequence):
     return msg_info
     
 def CreateTFMessage(pose_msg, img_time, sequence):
-    down = airsim.Quaternionr(0,0,0,1)
-    orientation = airsim.Quaternionr(pose_msg.orientation.x_val, pose_msg.orientation.y_val, pose_msg.orientation.z_val, pose_msg.orientation.w_val) 
-    final = orientation.__mul__(down) 
+    # down = airsim.Quaternionr(0, -0.7071067690849304, 0, 0.7071067094802856)
+    down = airsim.Quaternionr(0, 0, 0, 1)
+    enu  = airsim.Quaternionr(0.7071068, 0.7071068, 0, 0) 
+    final = enu.__mul__(down) 
     msg_tf = TFMessage()
     msg_tf.transforms.append(TransformStamped())
     msg_tf.transforms[0].header.seq = sequence

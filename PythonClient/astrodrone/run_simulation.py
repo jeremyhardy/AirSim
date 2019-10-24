@@ -128,7 +128,6 @@ while trigger == 1:
     sim_time = rospy.Time.from_sec((acc_time - time_start)*0.7 + time_start)
     truth = client.simGetGroundTruthKinematics()
     environment = client.simGetGroundTruthEnvironment()
-    print(truth)
     gravity = utils.quat2vec(environment.gravity)
     # truth = client.getMultirotorState()  
     linear_acc, angular_vel = inertial.Truth2Body(truth, gravity) 
@@ -192,7 +191,9 @@ while trigger == 1:
     if SCANNING:
         lidar_data = client.getLidarData()
         points = np.array(lidar_data.point_cloud, dtype=np.dtype('f4'))
-
+        print(points.shape)
+        print(len(points.shape))
+        print("\tReading %d: time_stamp: %d number_of_points: %d" % (sequence, lidar_data.time_stamp, len(points)))
         try:
             points = np.reshape(points, (int(points.shape[0] / 3), 3))
 
@@ -201,9 +202,13 @@ while trigger == 1:
 
             publisher_transform.publish(lidar_tf) 
             publisher_scanning.publish(scan_msg)
-
+            #print(points.shape) 
+            #print(scan_msg.width, scan_msg.height) 
+            #print(scan_msg.point_step, scan_msg.row_step) 
+            #print(len(scan_msg.data))
         except ValueError: 
             print("Scanning LiDAR skipped due to incomplete data") 
 
     sequence += 1
+    trigger = 0 
 subprocess.Popen('rosnode kill -a', stdin=subprocess.PIPE, shell=True, cwd=path)

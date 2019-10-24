@@ -96,6 +96,11 @@ void UnrealLidarSensor::getPointCloud(const msr::airlib::Pose& lidar_pose, const
                 point_cloud.emplace_back(point.y());
                 point_cloud.emplace_back(point.z());
             }
+            else { 
+                point_cloud.emplace_back(nan);
+                point_cloud.emplace_back(nan);
+                point_cloud.emplace_back(nan);
+            }
         }
     }
 
