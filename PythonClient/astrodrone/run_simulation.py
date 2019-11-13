@@ -125,7 +125,8 @@ msg_path = Path()
 while trigger == 1:
     client.simPause(False)
     acc_time = rospy.Time.now().to_sec()
-    sim_time = rospy.Time.from_sec((acc_time - time_start)*0.7 + time_start)
+    sim_time = rospy.Time.from_sec((acc_time - time_start)*1.0 + time_start)
+    print(rospy.Time.to_sec(sim_time))
     truth = client.simGetGroundTruthKinematics()
     environment = client.simGetGroundTruthEnvironment()
     gravity = utils.quat2vec(environment.gravity)
@@ -190,15 +191,25 @@ while trigger == 1:
 
     if SCANNING:
         lidar_data = client.getLidarData()
-        points = np.array(lidar_data.point_cloud, dtype=np.dtype('f4'))
+        points = np.array(lidar_data.point_cloud)
         # print(points.shape)
         # print(len(points.shape))
         # print("\tReading %d: time_stamp: %d number_of_points: %d" % (sequence, lidar_data.time_stamp, len(points)))
         try:
             if len(points) % 48 != 0: 
-                print("Bad PC")
-            points = np.reshape(points, (int(points.shape[0] / 3), 3))
+                print("Bad PC: " + str(sequence))
+            points = np.array(points, dtype=np.dtype('f4'))
+            # points = np.reshape(points, (3, 16, int(points.shape[0]/48)))
+            # points = points.transpose() 
 
+            b = points.reshape(16,int(len(points)/16))
+            xs = np.copy(b[:,::3])
+            ys = np.copy(b[:,1::3])
+            zs = np.copy(b[:,2::3])
+            points = np.stack((xs,ys,zs))
+            points = points.transpose() 
+            #print(sim_time, rospy.Time(0,lidar_data.time_stamp))
+            #print(rospy.Time.to_sec(sim_time), rospy.Time.to_sec(rospy.Time(0,lidar_data.time_stamp)))
             scan_msg = pc_publisher.CreatePC2Message(points, sim_time, sequence)
             lidar_tf = img.CreateTFMessage(truth, sim_time, sequence)
 
@@ -210,6 +221,5 @@ while trigger == 1:
             #print(len(scan_msg.data))
         except ValueError: 
             print("Scanning LiDAR skipped due to incomplete data") 
-
     sequence += 1
 subprocess.Popen('rosnode kill -a', stdin=subprocess.PIPE, shell=True, cwd=path)

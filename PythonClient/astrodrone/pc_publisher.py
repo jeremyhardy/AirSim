@@ -13,11 +13,11 @@ def CreatePC2Message(points, stamp, sequence):
 	else:
 		msg_pc.height = 1
 		msg_pc.width = len(points)
-
+	
 	msg_pc.fields = [PointField('x', 0, PointField.FLOAT32, 1), PointField('y', 4, PointField.FLOAT32, 1), PointField('z', 8, PointField.FLOAT32, 1)]
 	msg_pc.is_bigendian = False
 	msg_pc.point_step = 12
-	msg_pc.row_step = 12*points.shape[0]
+	msg_pc.row_step = 12*msg_pc.width
 	msg_pc.is_dense = int(numpy.isfinite(points).all())
 	msg_pc.data = numpy.asarray(points, numpy.float32).tostring() 
 	return msg_pc
